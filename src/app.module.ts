@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { ImageModule } from './image/image.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [configuration.KEY],
     }),
+    UserModule,
+    ImageModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
