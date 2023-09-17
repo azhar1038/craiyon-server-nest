@@ -1,6 +1,5 @@
 import {
   Injectable,
-  Inject,
   ForbiddenException,
   ConflictException,
   NotFoundException,
@@ -11,13 +10,14 @@ import { Repository } from 'typeorm';
 import { HashService } from './hash.service';
 import { randomBytes } from 'crypto';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(User)
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @Inject(RefreshToken)
+    @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     private readonly hashService: HashService,
   ) {}
@@ -99,6 +99,8 @@ export class UserService {
       name,
       password: hashedPassword,
     });
+
+    await this.userRepository.save(newUser);
 
     return newUser;
   }

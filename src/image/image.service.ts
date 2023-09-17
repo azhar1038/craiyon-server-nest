@@ -1,21 +1,20 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FileService } from 'src/common/services/file/file.service';
 import {
   GeneratedImage,
   GeneratorModel,
   ImageResolution,
 } from './entities/generated-image.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import path from 'path';
-import { globalPaths } from 'src/config/globals.constants';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ImageService {
   constructor(
-    private readonly fileService: FileService,
-    @Inject(GeneratedImage)
+    @InjectRepository(GeneratedImage)
     private readonly generatedImageRepository: Repository<GeneratedImage>,
-    private readonly entityManager: EntityManager,
+    private readonly fileService: FileService,
   ) {}
 
   async saveImage(
@@ -34,6 +33,8 @@ export class ImageService {
         id: userId,
       },
     });
+
+    await this.generatedImageRepository.save(image);
 
     return image.id;
   }
@@ -54,7 +55,7 @@ export class ImageService {
 
     if (!image) throw new NotFoundException('Image does not exists');
 
-    return path.join(globalPaths.GENERATED_IMAGES, image.url);
+    return path.join('generatedImages', image.url);
   }
 
   async getUserGeneratedImages(

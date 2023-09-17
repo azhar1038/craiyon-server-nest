@@ -4,5 +4,6 @@ import { FileService } from './services/file/file.service';
 
 @Module({
   providers: [MailService, FileService],
+  exports: [MailService, FileService],
 })
 export class CommonModule {}

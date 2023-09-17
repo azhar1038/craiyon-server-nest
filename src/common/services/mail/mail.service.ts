@@ -7,7 +7,7 @@ import configuration from 'src/config/configuration';
 export class MailService {
   private readonly transporter: Transporter;
 
-  private constructor(
+  constructor(
     @Inject(configuration.KEY)
     private readonly config: ConfigType<typeof configuration>,
   ) {
