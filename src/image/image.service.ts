@@ -8,6 +8,7 @@ import {
 import { Repository } from 'typeorm';
 import path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
+import { OrderBy, SortBy } from 'src/common/enums';
 
 @Injectable()
 export class ImageService {
@@ -79,13 +80,13 @@ export class ImageService {
     userId: string | undefined,
     limit: number,
     page: number,
-    sort: string,
-    order: string,
+    sort: SortBy,
+    order: OrderBy,
   ): Promise<GeneratedImage[]> {
     const orderBy = {};
-    if (sort === 'like') {
+    if (sort === SortBy.LIKE) {
       orderBy['likes'] = order;
-    } else if (sort === 'created') {
+    } else if (sort === SortBy.CREATED) {
       orderBy['generatedAt'] = order;
     }
 
@@ -155,7 +156,7 @@ export class ImageService {
     );
   }
 
-  async toggleImagePrivate(userId: string, imageId: string): Promise<string> {
+  async isPrivate(userId: string, imageId: string): Promise<boolean> {
     const image = await this.generatedImageRepository.findOne({
       select: {
         id: true,
@@ -169,13 +170,21 @@ export class ImageService {
       },
     });
 
-    if (!image) throw new NotFoundException('Image dies not exists');
+    if (!image) throw new NotFoundException('Image does not exists');
 
+    return image.isPrivate;
+  }
+
+  async addToPrivate(imageId: string): Promise<void> {
     await this.generatedImageRepository.update(imageId, {
-      isPrivate: !image.isPrivate,
+      isPrivate: true,
     });
+  }
 
-    return `Image is now ${image.isPrivate ? 'Public' : 'Private'}`;
+  async remoeFromPrivate(imageId: string): Promise<void> {
+    await this.generatedImageRepository.update(imageId, {
+      isPrivate: false,
+    });
   }
 
   // TODO: Delete from favorite table
