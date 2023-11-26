@@ -1,9 +1,11 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export class GenerateImageDto {
   @IsNumber()
-  readonly page?: number;
+  @IsOptional()
+  readonly page: number = 0;
 
   @IsNumber()
-  readonly limit?: number;
+  @IsOptional()
+  readonly limit: number = 10;
 }
